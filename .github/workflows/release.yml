@@ -38,10 +38,10 @@ jobs:
       - name: 重命名应用
         run: |
           for file in app/build/outputs/apk/release/app-*.apk; do
-            if [[ $file =~ app-(.?*)release.apk ]]; then
-              new_file_name="app/build/outputs/apk/release/mytv-android-${BASH_REMATCH[1]}${{ steps.version.outputs.version }}.apk"
-              mv "$file" "$new_file_name"
-            fi
+            # 简单的文件重命名，不使用版本号
+            new_file_name="app/build/outputs/apk/release/mytv-android.apk"
+            echo "Renaming APK to: $new_file_name"
+            mv "$file" "$new_file_name"
           done
 
       - name: Prepare artifacts
@@ -52,7 +52,7 @@ jobs:
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
-          name: v${{ steps.version.outputs.version }}
+          name: "Release"
           token: ${{ secrets.GIT_TOKEN }}
           omitBodyDuringUpdate: true
           omitNameDuringUpdate: true

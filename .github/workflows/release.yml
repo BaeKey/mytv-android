@@ -31,14 +31,9 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD}}
 
-      - name: 获取版本号
-        id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >>$GITHUB_OUTPUT
-
       - name: 重命名应用
         run: |
           for file in app/build/outputs/apk/release/app-*.apk; do
-            # 简单的文件重命名，不使用版本号
             new_file_name="app/build/outputs/apk/release/mytv-android.apk"
             echo "Renaming APK to: $new_file_name"
             mv "$file" "$new_file_name"
@@ -49,13 +44,11 @@ jobs:
           mkdir artifacts
           cp app/build/outputs/apk/release/*.apk artifacts/
 
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
+      - name: Upload Caddy Binary
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: "Release"
-          token: ${{ secrets.GIT_TOKEN }}
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-          allowUpdates: true
-          artifacts: artifacts/*
+          tag_name: latest
+          files: |
+            artifacts/*
